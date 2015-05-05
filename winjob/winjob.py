@@ -7,7 +7,7 @@ from defusedxml import ElementTree
 import os
 import datetime
 import sys
-
+import json
 
 class Error(Exception):
     """Base exception."""
@@ -236,8 +236,55 @@ class XMLScheduledTask(object):
         return actions
 
     def parse(self):
-        print self.triggers
-        return "XML"
+        # Returns a dictionary containing all the fields of a XML task
+        task = {
+            "task_type": "XML",
+            "uri": self.uri,
+            "security_descriptor": self.security_descriptor,
+            "source": self.source,
+            "date": self.date,
+            "author": self.author,
+            "version": self.version,
+            "description": self.description,
+            "documentation": self.documentation,
+            "principal_id": self.principal_id,
+            "user_id": self.user_id,
+            "logon_type": self.logon_type,
+            "group_id": self.group_id,
+            "display_name": self.display_name,
+            "run_level": self.run_level,
+            "process_token_sid_type": self.process_token_sid_type,
+            "required_privileges": self.required_privileges,
+            "allow_start_on_demand": self.allow_start_on_demand,
+            "disallow_start_on_batteries": self.disallow_start_on_batteries,
+            "stop_on_batteries": self.stop_on_batteries,
+            "allow_hard_terminate": self.allow_hard_terminate,
+            "start_when_available": self.start_when_available,
+            "network_profile_name": self.network_profile_name,
+            "run_only_on_network": self.run_only_on_network,
+            "wake_to_run": self.wake_to_run,
+            "enabled": self.enabled,
+            "hidden": self.hidden,
+            "delete_expired": self.delete_expired,
+            "execution_time_limit": self.execution_time_limit,
+            "run_only_idle": self.run_only_idle,
+            "unified_scheduling_engine": self.unified_scheduling_engine,
+            "disallow_start_on_remote_app_session": self.disallow_start_on_remote_app_session,
+            "multiple_instances_policy": self.multiple_instances_policy,
+            "priority": self.priority,
+            "idle_duration": self.idle_duration,
+            "idle_wait_timeout": self.idle_wait_timeout,
+            "idle_stop_on_idle_end": self.idle_stop_on_idle_end,
+            "idle_restart_on_idle": self.idle_restart_on_idle,
+            "network_name": self.network_name,
+            "network_id": self.network_id,
+            "restart_on_fail_interval": self.restart_on_fail_interval,
+            "restart_on_fail_count": self.restart_on_fail_count,
+            "data": self.data,
+            "triggers": self.triggers,
+            "actions": self.actions
+        }
+        return task
 
 
 class BinaryScheduledTask(object):
@@ -388,7 +435,7 @@ class BinaryScheduledTask(object):
 
     @staticmethod
     def _get_uuid(data):
-        return data[4:20][0]
+        return data[4:20]
 
     @staticmethod
     def _get_last_run(data):
@@ -402,8 +449,9 @@ class BinaryScheduledTask(object):
         return datetime.datetime(year, month, day, hour, minute, second, milliseconds * 1000)
 
     def _get_offset_length_data(self, data, unicode_string=False):
-        # Read the 2 byte length of data and then return the data from offset
-        value = None
+        # Read the 2 byte length of data and then return the data from offset, for unicode strings the length is the
+        # number of characters so it
+        value = ""
         value_begin = self.read_offset + 2
         value_length = int(struct.unpack("<H", data[self.read_offset:value_begin])[0])
         if value_length:
@@ -412,6 +460,8 @@ class BinaryScheduledTask(object):
             value_end = value_begin + value_length
             value = data[value_begin:value_end]
         self.read_offset += value_length + 2
+        if value and unicode_string:
+            value = value[0:value_length-2]
         return value
 
     def _get_triggers(self, data):
@@ -454,11 +504,59 @@ class BinaryScheduledTask(object):
         return signature
 
     def parse(self):
-        print self.application_name
-        return "BIN"
+        # Returns a dictionary containing all the fields of a binary task
+        flags = []
+        for flag in self.TASK_FLAGS:
+            if flag & self.flags:
+                flags.append(self.TASK_FLAGS[flag])
+
+        triggers = self.triggers
+        for trigger in triggers:
+            flags = []
+            for flag in self.TRIGGER_FLAGS:
+                if flag & trigger["flags"]:
+                    flags.append(self.TRIGGER_FLAGS[flag])
+            trigger["flags"] = flags
+
+        data1 = struct.unpack("<I", self.uuid[0:4])[0]
+        data2 = struct.unpack("<H", self.uuid[4:6])[0]
+        data3 = struct.unpack("<H", self.uuid[6:8])[0]
+        data4 = struct.unpack(">HHHH", self.uuid[8:16])
+
+        uuid = "%08X-%04X-%04X-%04X-%04X%04X%04X" % (data1, data2, data3,
+                data4[0], data4[1], data4[2], data4[3])
+
+        task = {
+            "task_type": "Binary",
+            "application_name": self.application_name.decode('utf-16'),
+            "author": self.author.decode('utf-16'),
+            "comment": self.comment.decode('utf-16'),
+            "error_retry_count": self.error_retry_count,
+            "error_retry_interval": self.error_retry_interval,
+            "exitcode": self.EXITCODE[self.exitcode],
+            "file_version": self.FILE_VERSIONS[self.file_version],
+            "flags": flags,
+            "idle_deadline": self.idle_deadline,
+            "idle_wait": self.idle_wait,
+            "lastrun": str(self.lastrun),
+            "maximum_run_time": self.maximum_run_time,
+            "parameters": self.parameters.decode('utf-16'),
+            "priority": self.PRIORITY[self.priority],
+            "product_version": self.PRODUCT_VERSIONS[self.product_version],
+            "reserved_data": self.reserved_data,
+            "running_instance_count": self.running_instance_count,
+            "signature": self.signature,
+            "status": self.STATUS[self.status],
+            "triggers": triggers,
+            "user_data": self.user_data,
+            "uuid": uuid,
+            "working_dir": self.working_dir.decode('utf-16')
+        }
+        return task
 
 
 def read_task(file_data):
+    # Returns a task object based on file data provided
     try:
         task_object = XMLScheduledTask(file_data)
     except FormatError:
@@ -469,13 +567,12 @@ def read_task(file_data):
     return task_object
 
 if __name__ == "__main__":
-    # if len(sys.argv) <= 1:
-    #     print "Usage: %s <file>" % sys.argv[0]
-    #     sys.exit(-1)
-    #
-    # filename = sys.argv[1]
-    # filename = "/Users/seagill/Desktop/Adobe-xml.job"
-    filename = "/Users/seagill/Desktop/Adobe-bin.job"
+    # Enables command line usage.
+    if len(sys.argv) <= 1:
+        print "Usage: %s <file>" % sys.argv[0]
+        sys.exit(-1)
+
+    filename = sys.argv[1]
 
     if os.path.isfile(filename):
         fd = open(filename, "rb")
@@ -489,5 +586,4 @@ if __name__ == "__main__":
             except FormatError:
                 print "File is not XML or Binary job format"
                 sys.exit(-1)
-
-        print task.parse()
+        print json.dumps(task.parse(), indent=2)
