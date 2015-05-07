@@ -48,7 +48,6 @@ On the command line:
 More Information
 ================
 * Free software: BSD license, see LICENSE.txt for details
-* Documentation: https://winjob.readthedocs.org.
 
 Code licensed under the BSD license. See LICENSE.txt
 file for terms.
