@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-# redislite documentation build configuration file, created by
-# sphinx-quickstart on Fri Mar  6 22:27:18 2015.
+# Copyright (c) 2015, Yahoo Inc.
+# Copyrights licensed under the BSD
+# See the accompanying LICENSE.txt file for terms.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.

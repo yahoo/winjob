@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+# Copyright (c) 2015, Yahoo Inc.
+# Copyrights licensed under the BSD
+# See the accompanying LICENSE.txt file for terms.
+
 """Parser for Windows Scheduled Task files
 """
 
@@ -21,7 +26,7 @@ class XMLScheduledTask(object):
 
     def __init__(self, task_data=None):
         try:
-            task_xml = ElementTree.fromstring(task_data)
+            task_xml = ElementTree.fromstring(task_data, forbid_dtd=True)
         except ElementTree.ParseError:
             raise FormatError("Job file is not XML format")
 
