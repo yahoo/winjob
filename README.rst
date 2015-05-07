@@ -1,6 +1,9 @@
 winjob
 ******************************
-Parser for Windows Scheduled Task files
+Parser for Windows Scheduled Task files.  This module will attempt to determine if the job file is in binary or xml
+format and then create an object that contains attributes for all of the fields. Calling that object's parse method
+will cause it to return a dictionary of those fields. When used from the command line it will output that dictionary
+as a JSON object.
 
 Build Status
 ============
