@@ -19,7 +19,7 @@ setup_arguments = {
     'version': '0.0.0',
     'author': 'Sean Gillespie',
     'author_email': 'seagill@yahoo-inc.com',
-    'url': 'http://github.com/yahoo/{cookiecutter.module_name|replace("-","_")}}',
+    'url': 'http://github.com/yahoo/winjob',
     'license': 'LICENSE.txt',
     'packages': ['winjob'],
     'long_description': 'Parser for Windows Scheduled Task files',
