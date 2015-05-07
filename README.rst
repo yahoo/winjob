@@ -5,7 +5,7 @@ Parser for Windows Scheduled Task files
 Build Status
 ============
 
-.. image:: https://pypip.in/download/winjob/badge.svg
+.. image:: https://img.shields.io/pypi/dm/winjob.svg
     :target: https://pypi.python.org/pypi/winjob/
     
 .. image:: https://img.shields.io/pypi/v/winjob.svg
@@ -25,6 +25,7 @@ Installation
     $ pip install winjob
 
 .. code-block::
+
     $ python setup.py install
 
 Usage
@@ -41,6 +42,7 @@ As a module:
 On the command line:
 
 .. code-block::
+
     $ winjob.py taskfile.job
 
 More Information
