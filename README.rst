@@ -4,28 +4,45 @@ Parser for Windows Scheduled Task files
 
 Build Status
 ============
-.. image:: https://img.shields.io/travis/pidydx/winjob.svg
-        :target: https://travis-ci.org/pidydx/winjob
-
-.. image:: https://coveralls.io/repos/yahoo/winjob/badge.svg
-  :target: https://coveralls.io/r/yahoo/winjob
 
 .. image:: https://pypip.in/download/winjob/badge.svg
     :target: https://pypi.python.org/pypi/winjob/
     
-.. image:: https://pypip.in/version/winjob/badge.svg
+.. image:: https://img.shields.io/pypi/v/winjob.svg
    :target: https://pypi.python.org/pypi/winjob
 
-.. image:: https://pypip.in/py_versions/winjob/badge.svg
+.. image:: https://img.shields.io/badge/python-2.7-blue.svg
     :target: https://pypi.python.org/pypi/winjob/
 
-.. image:: https://pypip.in/license/winjob/badge.svg
+.. image:: https://img.shields.io/pypi/l/winjob.svg
     :target: https://pypi.python.org/pypi/winjob/
 
-.. image:: https://readthedocs.org/projects/winjobbadge/?version=latest
-    :target: http://winjob.readthedocs.org/en/latest/
-    :alt: Documentation Status
-    
+Installation
+================
+
+.. code-block::
+
+    $ pip install winjob
+
+.. code-block::
+    $ python setup.py install
+
+Usage
+================
+As a module:
+
+.. code-block:: python
+
+    >>> import winjob
+    >>> fd = open('taskfile.job', 'r')
+    >>> task = winjob.winjob.read_task(fd.read())
+    >>> print task.parse()
+
+On the command line:
+
+.. code-block::
+    $ winjob.py taskfile.job
+
 More Information
 ================
 * Free software: BSD license, see LICENSE.txt for details
