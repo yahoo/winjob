@@ -33,6 +33,7 @@ setup_arguments = {
         'winjob': ['package_metadata.json']
     },
     'include_package_data': True,
+    'install_requires': ["defusedxml >= 0.4.1"]
 }
 
 

@@ -51,6 +51,3 @@ On the command line:
 More Information
 ================
 * Free software: BSD license, see LICENSE.txt for details
-
-Code licensed under the BSD license. See LICENSE.txt
-file for terms.
