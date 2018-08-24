@@ -38,9 +38,9 @@ As a module:
 .. code-block:: python
 
     >>> import winjob
-    >>> fd = open('taskfile.job', 'r')
+    >>> fd = open('taskfile.job', 'rb')
     >>> task = winjob.winjob.read_task(fd.read())
-    >>> print task.parse()
+    >>> print(task.parse())
 
 On the command line:
 

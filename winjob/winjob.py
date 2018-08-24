@@ -574,7 +574,7 @@ def read_task(file_data):
 if __name__ == "__main__":
     # Enables command line usage.
     if len(sys.argv) <= 1:
-        print "Usage: %s <file>" % sys.argv[0]
+        print("Usage: %s <file>" % sys.argv[0])
         sys.exit(-1)
 
     filename = sys.argv[1]
@@ -589,6 +589,6 @@ if __name__ == "__main__":
             try:
                 task = BinaryScheduledTask(file_data)
             except FormatError:
-                print "File is not XML or Binary job format"
+                print("File is not XML or Binary job format")
                 sys.exit(-1)
-        print json.dumps(task.parse(), indent=2)
+        print(json.dumps(task.parse(), indent=2))
