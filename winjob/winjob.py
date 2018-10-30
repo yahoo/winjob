@@ -141,7 +141,13 @@ class XMLScheduledTask(object):
     def _get_raw_xml(data, path):
         xml = data.find(path)
         if xml is not None:
-            return ElementTree.tostring(xml, encoding="unicode")
+            xml_raw = ElementTree.tostring(xml, encoding="utf-8")
+            # python 2.7 : unicode is unknown (raises LookupError), utf-8 is known
+            # python 3 : only us-ascii or unicode are accepted
+            #    if utf-8 is specified, tostring() returns bytes and we decode them as utf-8
+            if isinstance(xml_raw, bytes):
+                xml_raw = xml_raw.decode('utf-8', errors='replace')
+            return xml_raw
         else:
             return ""
 
