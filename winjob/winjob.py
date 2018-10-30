@@ -141,7 +141,7 @@ class XMLScheduledTask(object):
     def _get_raw_xml(data, path):
         xml = data.find(path)
         if xml is not None:
-            return ElementTree.tostring(xml, encoding="utf-8")
+            return ElementTree.tostring(xml, encoding="unicode")
         else:
             return ""
 
