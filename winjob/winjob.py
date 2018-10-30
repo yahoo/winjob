@@ -589,6 +589,6 @@ if __name__ == "__main__":
             try:
                 task = BinaryScheduledTask(file_data)
             except FormatError:
-                print "File is not XML or Binary job format"
+                print("File is not XML or Binary job format")
                 sys.exit(-1)
         print(json.dumps(task.parse(), indent=2))
