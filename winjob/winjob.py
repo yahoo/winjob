@@ -54,31 +54,31 @@ class XMLScheduledTask(object):
                                                                "Principals/Principal/RequiredPrivileges/Privilege")
 
         # Load Settings data
-        self.allow_start_on_demand = self._get_element_data(task_xml, "AllowStartOnDemand")
-        self.disallow_start_on_batteries = self._get_element_data(task_xml, "DisallowStartIfOnBatteries")
-        self.stop_on_batteries = self._get_element_data(task_xml, "StopIfGoingOnBatteries")
-        self.allow_hard_terminate = self._get_element_data(task_xml, "AllowHardTerminate")
-        self.start_when_available = self._get_element_data(task_xml, "StartWhenAvailable")
-        self.network_profile_name = self._get_element_data(task_xml, "NetworkProfileName")
-        self.run_only_on_network = self._get_element_data(task_xml, "RunOnlyIfNetworkAvailable")
-        self.wake_to_run = self._get_element_data(task_xml, "WakeToRun")
-        self.enabled = self._get_element_data(task_xml, "Enabled")
-        self.hidden = self._get_element_data(task_xml, "Hidden")
-        self.delete_expired = self._get_element_data(task_xml, "DeleteExpiredTaskAfter")
-        self.execution_time_limit = self._get_element_data(task_xml, "ExecutionTimeLimit")
-        self.run_only_idle = self._get_element_data(task_xml, "RunOnlyIfIdle")
-        self.unified_scheduling_engine = self._get_element_data(task_xml, "UseUnifiedSchedulingEngine")
-        self.disallow_start_on_remote_app_session = self._get_element_data(task_xml, "DisallowStartOnRemoteAppSession")
-        self.multiple_instances_policy = self._get_element_data(task_xml, "MultipleInstancesPolicy")
-        self.priority = self._get_element_data(task_xml, "Priority")
-        self.idle_duration = self._get_element_data(task_xml, "IdleSettings/Duration")
-        self.idle_wait_timeout = self._get_element_data(task_xml, "IdleSettings/WaitTimeout")
-        self.idle_stop_on_idle_end = self._get_element_data(task_xml, "IdleSettings/StopOnIdleEnd")
-        self.idle_restart_on_idle = self._get_element_data(task_xml, "IdleSettings/RestartOnIdle")
-        self.network_name = self._get_element_data(task_xml, "NetworkSettings/Name")
-        self.network_id = self._get_element_data(task_xml, "NetworkSettings/Id")
-        self.restart_on_fail_interval = self._get_element_data(task_xml, "RestartOnFailure/Interval")
-        self.restart_on_fail_count = self._get_element_data(task_xml, "RestartOnFailure/Count")
+        self.allow_start_on_demand = self._get_element_data(task_xml, "Settings/AllowStartOnDemand")
+        self.disallow_start_on_batteries = self._get_element_data(task_xml, "Settings/DisallowStartIfOnBatteries")
+        self.stop_on_batteries = self._get_element_data(task_xml, "Settings/StopIfGoingOnBatteries")
+        self.allow_hard_terminate = self._get_element_data(task_xml, "Settings/AllowHardTerminate")
+        self.start_when_available = self._get_element_data(task_xml, "Settings/StartWhenAvailable")
+        self.network_profile_name = self._get_element_data(task_xml, "Settings/NetworkProfileName")
+        self.run_only_on_network = self._get_element_data(task_xml, "Settings/RunOnlyIfNetworkAvailable")
+        self.wake_to_run = self._get_element_data(task_xml, "Settings/WakeToRun")
+        self.enabled = self._get_element_data(task_xml, "Settings/Enabled")
+        self.hidden = self._get_element_data(task_xml, "Settings/Hidden")
+        self.delete_expired = self._get_element_data(task_xml, "Settings/DeleteExpiredTaskAfter")
+        self.execution_time_limit = self._get_element_data(task_xml, "Settings/ExecutionTimeLimit")
+        self.run_only_idle = self._get_element_data(task_xml, "Settings/RunOnlyIfIdle")
+        self.unified_scheduling_engine = self._get_element_data(task_xml, "Settings/UseUnifiedSchedulingEngine")
+        self.disallow_start_on_remote_app_session = self._get_element_data(task_xml, "Settings/DisallowStartOnRemoteAppSession")
+        self.multiple_instances_policy = self._get_element_data(task_xml, "Settings/MultipleInstancesPolicy")
+        self.priority = self._get_element_data(task_xml, "Settings/Priority")
+        self.idle_duration = self._get_element_data(task_xml, "Settings/IdleSettings/Duration")
+        self.idle_wait_timeout = self._get_element_data(task_xml, "Settings/IdleSettings/WaitTimeout")
+        self.idle_stop_on_idle_end = self._get_element_data(task_xml, "Settings/IdleSettings/StopOnIdleEnd")
+        self.idle_restart_on_idle = self._get_element_data(task_xml, "Settings/IdleSettings/RestartOnIdle")
+        self.network_name = self._get_element_data(task_xml, "Settings/NetworkSettings/Name")
+        self.network_id = self._get_element_data(task_xml, "Settings/NetworkSettings/Id")
+        self.restart_on_fail_interval = self._get_element_data(task_xml, "Settings/RestartOnFailure/Interval")
+        self.restart_on_fail_count = self._get_element_data(task_xml, "Settings/RestartOnFailure/Count")
 
         # Load Data data
         self.data = self._get_raw_xml(task_xml, "Data")
@@ -141,7 +141,13 @@ class XMLScheduledTask(object):
     def _get_raw_xml(data, path):
         xml = data.find(path)
         if xml is not None:
-            return ElementTree.tostring(xml, encoding="utf-8")
+            xml_raw = ElementTree.tostring(xml, encoding="utf-8")
+            # python 2.7 : unicode is unknown (raises LookupError), utf-8 is known
+            # python 3 : only us-ascii or unicode are accepted
+            #    if utf-8 is specified, tostring() returns bytes and we decode them as utf-8
+            if isinstance(xml_raw, bytes):
+                xml_raw = xml_raw.decode('utf-8', errors='replace')
+            return xml_raw
         else:
             return ""
 
@@ -574,7 +580,7 @@ def read_task(file_data):
 if __name__ == "__main__":
     # Enables command line usage.
     if len(sys.argv) <= 1:
-        print "Usage: %s <file>" % sys.argv[0]
+        print("Usage: %s <file>" % sys.argv[0])
         sys.exit(-1)
 
     filename = sys.argv[1]
@@ -589,6 +595,6 @@ if __name__ == "__main__":
             try:
                 task = BinaryScheduledTask(file_data)
             except FormatError:
-                print "File is not XML or Binary job format"
+                print("File is not XML or Binary job format")
                 sys.exit(-1)
-        print json.dumps(task.parse(), indent=2)
+        print(json.dumps(task.parse(), indent=2))
